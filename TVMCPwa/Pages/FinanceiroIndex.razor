@@ -1,0 +1,44 @@
+﻿@page "/financeiroindex"
+@inherits TVMCPwa.ViewModels.FinanceiroViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgb(164, 128, 128) 100%);
+    }
+</style>
+<div class="wrapper container">
+    <div class="container-fluid text-right">
+        <h3>Financeiro</h3>
+    </div>
+
+    <div class="row">
+        @if (resumoList.Count > 0)
+        {
+            <GridData Caption="Mensalidades Resumo"
+                      THeadClass="alert-primary"
+                      Items="resumoList"
+                      AlturaGrid="350px"
+                      LarguraGrid="600px"
+                      PageSize="10">
+                <GridHeader>
+                    <th scope="col" class="text-center">Referência</th>
+                    <th scope="col" class="text-right">Valor Receber no Mês</th>
+                    <th scope="col" class="text-center">Qtde</th>
+                    <th scope="col" class="text-right">Valor Recebido no Mês</th>
+                    <th scope="col" class="text-center">Qtde</th>
+                    <th scope="col" class="text-right">Valor em Débito no Mês</th>
+                    <th scope="col" class="text-center">Qtde</th>
+                </GridHeader>
+                <GridRow>
+                    <td scope="row" class="text-center">@context.MesRef</td>
+                    <td scope="row" class="text-right">@context.ValorMensalidade.ToString("c")</td>
+                    <td scope="row" class="text-center">@context.QtdeParcelas</td>
+                    <td scope="row" class="text-right">@context.ValorRecebido.ToString("c")</td>
+                    <td scope="row" class="text-center">@context.QtdeParcelasPagas</td>
+                    <td scope="row" class="text-right alert alert-danger"><strong>@context.ValorNaoRecebido.ToString("c")</strong></td>
+                    <td scope="row" class="text-center alert alert-danger"><strong>@context.QtdeParcelasNaoPagas</strong></td>
+                </GridRow>
+            </GridData>
+        }
+    </div>
+</div>

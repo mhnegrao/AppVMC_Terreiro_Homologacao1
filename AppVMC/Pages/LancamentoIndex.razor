@@ -1,0 +1,115 @@
+﻿@page "/lancamentoindex"
+@inherits AppVMC.ViewModels.LancamentoViewModel
+
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, #7e7edd 100%);
+    }
+</style>
+
+<div class="container backgradient">
+    <div class="container-fluid text-right">
+        <h3>Controle de Lançamentos</h3>
+        <button class="btn btn-primary" @onclick="NovoLancamento">Novo Lançamento</button>
+    </div>
+    <br />
+    <div class="row">
+        <h5 class="col col-sm-3">Filtrar por data</h5>
+        <MatDatePicker Label="Data Inicial"
+                       Class="col col-sm-3"
+                       @bind-Value="dataInicio"
+                       InputClass="mask-data" />
+        <MatDatePicker Label="Data Final"
+                       Class="col col-sm-3"
+                       @bind-Value="dataTermino"
+                       InputClass="mask-data" />
+    </div>
+    <div class="row text-right">
+        <button class="col col-sm btn btn-primary" @onclick="FiltrarClick">Filtrar</button>
+        <button class="col col-sm btn btn-dark" @onclick="LimparClick">Limpar Filtro</button>
+    </div>
+</div>
+<br/>
+<div class="row text-center">@if (!lanctoList.Any()){<h5>Aguarde...</h5>}</div>
+
+<div class="container">
+    @if (lanctoList.Count > 0)
+    {
+        <DataGrid Caption="Relação de Lancamentos"
+                  THeadClass="alert-primary"
+                  Items="lanctoList"
+                  AlturaGrid="350px"
+                  LarguraGrid="600"
+                  PageSize="10">
+            <GridHeader>
+                <th scope="col" class="text-center">Nº</th>
+                <th scope="col" class="text-center">Data</th>
+                <th scope="col">Descrição</th>
+                <th scope="col" class="text-right">Valor</th>
+                <th scope="col" class="text-center">Tipo</th>
+                <th scope="col" colspan="2" class="text-center">Ações</th>
+            </GridHeader>
+            <GridRow>
+                <td scope="row" class="text-center">@context.Id</td>
+                <td scope="row" class="text-center">@context.DataLancamento.ToShortDateString()</td>
+                <td scope="row" class="text-truncate">@context.DescricaoLancamento</td>
+                <td scope="row" class="text-right">@context.ValorLancto.ToString("c")</td>
+                <td scope="row" class="text-center">@context.TipoLanctoToString</td>
+                <td class="text-right" scope="col" title="@($"Editar Lançamento nº:{context.Id}")">
+                    <MatIconButton @onclick="@(async ()=>{await EditarLancamento(@context.Id);})">
+                        <MatIcon Id="edit-button" Style="color:#ff6a00">@MatIconNames.Edit</MatIcon>
+                    </MatIconButton>
+                </td>
+                <td class="text-left" scope="col" title="@($"Excluir Lançamento nº:{context.Id}")">
+                    <MatIconButton Id="delete-button" @onclick="@(async ()=>{await ExcluirClick(context.Id);})">
+                        <MatIcon Style="color:red">@MatIconNames.Delete</MatIcon>
+                    </MatIconButton>
+                </td>
+            </GridRow>
+        </DataGrid>
+
+        <hr />
+
+        <div class="container-fluid text-right">
+            <label><strong>Totais</strong></label>
+            <p>
+                <label style="color:red">Débitos   => Qtde: <strong><em>@qtdeDebito</em></strong>  Valor: <strong><em> @valorDebito.ToString("c")</em></strong></label>
+            </p>
+            <p>
+                <label style="color:blue">Créditos => Qtde: <strong><em>@qtdeCredito</em></strong>  Valor: <strong><em>@valorCredito.ToString("c")</em></strong> </label>
+            </p>
+
+        </div>
+
+    }
+</div>
+
+<div class="wrapper"></div>
+
+@code{
+
+
+    DateTime dataInicio, dataTermino;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("maskInputs");
+        }
+
+    }
+
+    async Task FiltrarClick()
+    {
+        await Task.FromResult(FiltrarLancamentoPorPeriodo(dataInicio, dataTermino));
+    }
+    async Task LimparClick()
+    {
+        await Task.Run(() => ObterLancamentos());
+        ObterTotais();
+        StateHasChanged();
+    }
+}

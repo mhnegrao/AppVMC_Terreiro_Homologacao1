@@ -1,0 +1,9 @@
+﻿.backgradient > body {
+    background: rgb(245,237,240) !important;
+    background: radial-gradient(circle, rgba(245,237,240,1) 0%, #c5c5f3 100%);
+}
+
+    h3{
+          color:red;
+      }
+}

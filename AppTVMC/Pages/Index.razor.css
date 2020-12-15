@@ -1,0 +1,12 @@
+﻿h1 {
+    margin: 15px;
+    color: blue;
+}
+body {
+    height: 100%;
+    background-image: url('images/pretos-velhos.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}

@@ -1,0 +1,115 @@
+﻿
+caption {
+    caption-side: top;
+    font-family: Tahoma, sans-serif;
+    text-align: center;
+    color: var(--corDoTitulo);
+    background-color: var(--corFundoTitulo);
+    text-shadow: inherit;
+    font-size: 115%;
+    font-weight: bold;
+}
+
+.datagrid-layout {
+    /*max-width: 60em;*/
+    margin: auto;
+    width: auto;
+    border: 0;
+}
+
+.datagrid-container {
+    /*max-height: 10em;*/
+    overflow-y: scroll;
+    /*outline: 1px solid dimgrey;*/
+    outline-offset: -1px;
+    height: var(--alturaGrid);
+    width:var(--larguraGrid);
+}
+/* PAGE LAYOUT END */
+
+/* DEFAULT TABLE */
+table {
+    position: relative;
+    border-collapse: collapse;
+    table-layout: auto;
+    white-space: normal;
+    word-wrap: break-word;
+}
+
+tr {
+    height: 0px;
+}
+
+th, td {
+    font-family: 'Blinker', sans-serif;
+/*    background-color: rgba(197, 158, 203, 0.69);
+*/    padding: 0.25rem;
+    vertical-align: middle;
+}
+
+th {
+    position: sticky;
+    top: 0; /* Don't forget this, required for the stickiness */
+    /*background-color: dimgrey;*/
+}
+
+tbody tr:hover {
+    background: #7bea40;
+}
+
+tfoot {
+    background-color: darkcyan;
+}
+/* DEFAULT TABLE END */
+
+/* CUSTOM TABLE */
+#datagrid {
+    position: static;
+    overflow: hidden;
+}
+
+    #datagrid th {
+        white-space: nowrap;
+    }
+
+        #datagrid th:first-child div {
+            border-left: none;
+        }
+
+        #datagrid th div {
+            position: absolute;
+            z-index: 2;
+            font-weight: bold;
+            width: 100%;
+            /*color: white;*/
+            /*background-color: dimgrey;*/
+            padding: 1rem;
+            /*border-left: 1px solid white;*/
+            margin-left: calc(-1rem - 1px);
+        }
+
+    #datagrid caption thead div {
+        top: 0;
+    }
+
+    #datagrid tfoot div {
+        bottom: 0;
+    }
+
+.cut-off th:nth-child(1) {
+    width: 75%;
+}
+
+.cut-off td:nth-child(1) {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.cut-off th:nth-child(2) {
+    width: 25%;
+}
+
+.cut-off td:nth-child(2) span {
+    display: block;
+}

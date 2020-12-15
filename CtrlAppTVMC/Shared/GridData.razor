@@ -1,0 +1,233 @@
+﻿@typeparam TableItem
+<!--<style>
+    h1{
+  font-size: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 300;
+  text-align: center;
+  margin-bottom: 15px;
+}
+table{
+  width:100%;
+  table-layout: fixed;
+}
+.tbl-header{
+  background-color: rgba(255,255,255,0.3);
+ }
+.tbl-content{
+  height:300px;
+  overflow-x:auto;
+  margin-top: 0px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+th{
+  padding: 20px 15px;
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: #fff;
+  text-transform: uppercase;
+}
+td{
+  padding: 15px;
+  text-align: left;
+  vertical-align:middle;
+  font-weight: 300;
+  font-size: 12px;
+  color: #fff;
+  border-bottom: solid 1px rgba(255,255,255,0.1);
+}
+
+/* demo styles */-->
+
+@*@import /*url(https://fonts.googleapis.com/css?family=Roboto:400,500,300,700);*/*@
+    <!--body {
+        background: -webkit-linear-gradient(left, #8b8b93, #b3b99e);
+        background: linear-gradient(to right, #8b8b93, #b3b99e);
+        font-family: 'Roboto', sans-serif;
+    }
+section{
+  margin: 50px;
+}
+
+/* follow me template */
+.made-with-love {
+  margin-top: 40px;
+  padding: 10px;
+  clear: left;
+  text-align: center;
+  font-size: 10px;
+  font-family: arial;
+  color: #fff;
+}
+.made-with-love i {
+  font-style: normal;
+  color: #F50057;
+  font-size: 14px;
+  position: relative;
+  top: 2px;
+}
+.made-with-love a {
+  color: #fff;
+  text-decoration: none;
+}
+.made-with-love a:hover {
+  text-decoration: underline;
+}
+
+/* for custom scrollbar for webkit browser*/
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+</style>-->
+<br />
+<div class="table-responsive-sm">
+    <div id="datagrid" style="--alturaGrid:@AlturaGrid;--larguraGrid:@LarguraGrid">
+        <div class="datagrid-container">
+            <table class="table table-hover ">
+                <caption style="--corDoTitulo:@CaptionColor;--corFundoTitulo:@CaptionBackGroundColor">@Caption</caption>
+                <thead>
+                    <tr>@GridHeader</tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in ItemList)
+                    {
+                        <tr>@GridRow(item)</tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br />
+    <p style="font-size:medium;text-align:center">Qtde. de Registros:&nbsp;<strong style="color:blue">@Items.Count()</strong></p>
+    <!--Barra de paginação-->
+    <div class="pagination pagination-sm justify-content-center">
+        <button class="btn btn-circle btn-sm btn-outline-primary" @onclick=@(async () => SetPagerSize("back"))>&laquo;</button>
+        <button class="btn btn-sm btn-outline-info" @onclick=@(async () => NavigateToPage("previous"))>Anterior</button>
+
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            var currentPage = i;
+            <button class="btn btn-sm pagebutton @(currentPage==curPage?"currentpage":"")" @onclick=@(async () => updateList(currentPage))>
+                @currentPage
+            </button>
+        }
+
+        <button class="btn btn-sm btn-outline-info" @onclick=@(async () => NavigateToPage("next"))>Próxima</button>
+        <button class="btn btn-circle btn-sm  btn-outline-primary" @onclick=@(async () => SetPagerSize("forward"))>&raquo;</button>
+        <br />
+        <span class=" btn btn-md btn-link disabled">Pagina @curPage de @totalPages</span>
+    </div>
+</div>
+<!-- #region código -->
+
+@code {
+
+    int totalPages;
+    int curPage;
+    int pagerSize;
+    int startPage;
+    int endPage;
+
+    [Parameter]
+    public RenderFragment GridHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment<TableItem> GridRow { get; set; }
+
+    [Parameter]
+    public IEnumerable<TableItem> Items { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+    [Parameter]
+    public string THeadClass { get; set; }
+    [Parameter]
+    public string Caption { get; set; }
+    [Parameter]
+    public string CaptionColor { get; set; }
+    [Parameter]
+    public string CaptionBackGroundColor { get; set; }
+    [Parameter]
+    public string AlturaGrid { get; set; } = "200px";
+    [Parameter]
+    public string LarguraGrid { get; set; } = "auto";
+
+    IEnumerable<TableItem> ItemList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pagerSize = PageSize;
+        curPage = 1;
+
+        ItemList = await Task.FromResult<IEnumerable<TableItem>>(Items.Skip((curPage - 1) * PageSize).Take(PageSize));
+        totalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
+
+        SetPagerSize("forward");
+    }
+
+    public void updateList(int currentPage)
+    {
+        ItemList = Items.Skip((currentPage - 1) * PageSize).Take(PageSize);
+        curPage = currentPage;
+        this.StateHasChanged();
+    }
+
+    public void SetPagerSize(string direction)
+    {
+        if (direction == "forward" && endPage < totalPages)
+        {
+            startPage = endPage + 1;
+            if (endPage + pagerSize < totalPages)
+            {
+                endPage = startPage + pagerSize - 1;
+            }
+            else
+            {
+                endPage = totalPages;
+            }
+            this.StateHasChanged();
+        }
+        else if (direction == "back" && startPage > 1)
+        {
+            endPage = startPage - 1;
+            startPage = startPage - pagerSize;
+        }
+    }
+
+    public void NavigateToPage(string direction)
+    {
+        if (direction == "next")
+        {
+            if (curPage < totalPages)
+            {
+                if (curPage == endPage)
+                {
+                    SetPagerSize("forward");
+                }
+                curPage += 1;
+            }
+        }
+        else if (direction == "previous")
+        {
+            if (curPage > 1)
+            {
+                if (curPage == startPage)
+                {
+                    SetPagerSize("back");
+                }
+                curPage -= 1;
+            }
+        }
+        updateList(curPage);
+    }
+}

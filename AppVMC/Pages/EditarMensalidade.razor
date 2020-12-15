@@ -1,0 +1,66 @@
+﻿@page "/editMensalidade"
+@inherits AppVMC.ViewModels.MensalidadeViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgb(209, 211, 60) 100%);
+    }
+</style>
+    <div class="container-fluid text-right">
+        <h3>Alteração de Mensalidade</h3>
+    </div>
+    <p style="color:darkblue"><h4>Afiliado: @estaMensalidade.NomeAfiliado</h4></p>
+    <p style="color:firebrick"><h4>Mês de Referência: @estaMensalidade.MensalidadeReferencia</h4></p>
+
+    <div class="container-fluid">
+        <div class="row">
+            <MatDatePicker Label="Data do Vencimento"
+                           @bind-Value="estaMensalidade.DataVencimento"
+                           EnableTime="false"
+                           InputClass="mask-data"
+                           Class="col" 
+                           Style="text-align:center"/>
+            <MatTextField Label="Valor desta parcela"
+                          @bind-Value="estaMensalidade.ValorMensalidade"
+                          InputClass="mask-moeda"
+                          Class="col"
+                          Format="C"
+                          Style="text-align:right"/>
+        </div>
+        <div class="row">
+            <MatCheckbox Label="Pago" @bind-Value="estaMensalidade.Pago" Class="col" />
+            @if (estaMensalidade.Pago)
+            {
+                <MatDatePicker Label="Data Pagamento"
+                               @bind-Value="estaMensalidade.DataPagamento"
+                               InputClass="mask-data"
+                               Class="col"
+                               Style="text-align:center"/>
+                <MatTextField Label="Valor Pago"
+                              @bind-Value="estaMensalidade.ValorMensalidade"
+                              InputClass="mask-moeda"
+                              Class="col"
+                              Format="C" 
+                              Style="text-align:right"/>
+
+            }
+
+        </div>
+    </div>
+
+    <div class="container-fluid text-right">
+        <button class="btn btn-danger" @onclick="@(()=> { OpenPage("/mensalidadeindex"); })">Fechar</button>
+        <button class="btn btn-primary" @onclick="SalvarEdicao">Atualizar Parcela</button>
+    </div>
+
+    @code {
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                await JSRuntime.InvokeVoidAsync("maskInputs");
+
+            }
+        }
+
+    }

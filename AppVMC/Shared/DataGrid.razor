@@ -1,0 +1,150 @@
+﻿@typeparam TableItem
+@*@inherits ViewModelBase*@
+<br />
+<div class="table-responsive-sm">
+    <div id="datagrid" style="--alturaGrid:@AlturaGrid;--larguraGrid:@LarguraGrid">
+        <div class="datagrid-container">
+            <table class="table table-hover ">
+                <caption style="--corDoTitulo:@CaptionColor;--corFundoTitulo:@CaptionBackGroundColor">@Caption</caption>
+                <thead class="@THeadClass">
+                    <tr class="jsgrid-grid-header">@GridHeader</tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in ItemList)
+                    {
+                        <tr class="jsgrid-row-item">@GridRow(item)</tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br />
+    <p style="font-size:medium;text-align:center">Qtde. de Registros:&nbsp;<strong style="color:blue">@Items.Count()</strong></p>
+    <!--Barra de paginação-->
+    <div class="pagination pagination-sm justify-content-center">
+        <button class="btn btn-circle btn-sm btn-outline-primary" @onclick=@(async () => SetPagerSize("back"))>&laquo;</button>
+        <button class="btn btn-sm btn-outline-info" @onclick=@(async () => NavigateToPage("previous"))>Anterior</button>
+
+        @for (int i = startPage; i <= endPage; i++)
+        {
+            var currentPage = i;
+            <button class="btn btn-sm pagebutton @(currentPage==curPage?"currentpage":"")" @onclick=@(async () => updateList(currentPage))>
+                @currentPage
+            </button>
+        }
+
+        <button class="btn btn-sm btn-outline-info" @onclick=@(async () => NavigateToPage("next"))>Próxima</button>
+        <button class="btn btn-circle btn-sm  btn-outline-primary" @onclick=@(async () => SetPagerSize("forward"))>&raquo;</button>
+        <br />
+        <span class=" btn btn-md btn-link disabled">Pagina @curPage de @totalPages</span>
+    </div>
+
+
+</div>
+<!-- #region código -->
+
+@code {
+
+    int totalPages;
+    int curPage;
+    int pagerSize;
+    int startPage;
+    int endPage;
+
+    [Parameter]
+    public RenderFragment GridHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment<TableItem> GridRow { get; set; }
+
+    [Parameter]
+    public IEnumerable<TableItem> Items { get; set; }
+
+    [Parameter]
+    public int PageSize { get; set; }
+    [Parameter]
+    public string THeadClass { get; set; }
+    [Parameter]
+    public string Caption { get; set; }
+    [Parameter]
+    public string CaptionColor { get; set; }
+    [Parameter]
+    public string CaptionBackGroundColor { get; set; }
+    [Parameter]
+    public string AlturaGrid { get; set; } = "200px";
+    [Parameter]
+    public string LarguraGrid { get; set; } = "auto";
+
+    IEnumerable<TableItem> ItemList { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        pagerSize = PageSize;
+        curPage = 1;
+
+        ItemList = await Task.FromResult<IEnumerable<TableItem>>(Items.Skip((curPage - 1) * PageSize).Take(PageSize));
+        totalPages = (int)Math.Ceiling(Items.Count() / (decimal)PageSize);
+
+        SetPagerSize("forward");
+    }
+    //protected override Task OnAfterRenderAsync(bool firstRender)
+    //{
+    //    totalPages = Task.FromResult((int)Math.Ceiling(Items.Count() / (decimal)PageSize)).Result;
+    //}
+    public void updateList(int currentPage)
+    {
+        ItemList = Items.Skip((currentPage - 1) * PageSize).Take(PageSize);
+        curPage = currentPage;
+        this.StateHasChanged();
+    }
+
+    public void SetPagerSize(string direction)
+    {
+        if (direction == "forward" && endPage < totalPages)
+        {
+            startPage = endPage + 1;
+            if (endPage + pagerSize < totalPages)
+            {
+                endPage = startPage + pagerSize - 1;
+            }
+            else
+            {
+                endPage = totalPages;
+            }
+            this.StateHasChanged();
+        }
+        else if (direction == "back" && startPage > 1)
+        {
+            endPage = startPage - 1;
+            startPage = startPage - pagerSize;
+        }
+    }
+
+    public void NavigateToPage(string direction)
+    {
+        if (direction == "next")
+        {
+            if (curPage < totalPages)
+            {
+                if (curPage == endPage)
+                {
+                    SetPagerSize("forward");
+                }
+                curPage += 1;
+            }
+        }
+        else if (direction == "previous")
+        {
+            if (curPage > 1)
+            {
+                if (curPage == startPage)
+                {
+                    SetPagerSize("back");
+                }
+                curPage -= 1;
+            }
+        }
+        updateList(curPage);
+    }
+}

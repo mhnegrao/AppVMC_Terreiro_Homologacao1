@@ -1,0 +1,99 @@
+﻿@page "/gerarmensalidade"
+@inherits TVMCPwa.ViewModels.MensalidadeViewModel
+<style>
+    .my-select {
+        background-color: #ede69d;
+        color: #091d87;
+        font-size: medium;
+        text-align: center;
+        /*width: 50px;*/
+        border: 0 none;
+        border-radius: 5px;
+        padding: 6px 20px;
+    }
+</style>
+<div class="container-fluid text-right">
+    <h3>Nova Mensalidade</h3>
+</div>
+<div class="container">
+    <div class="row">
+        <label for="selectTipo" class="col col-sm-6 form-control text-md-center">
+            <MatH5>Escolha o modo para gerar</MatH5>
+        </label>
+        <select id="setectTipo" @bind="@tipoGerar" class="col col-sm custom-select my-select text-md-center">
+            @foreach (var cnt in Enum.GetValues(typeof(TipoMensalidadeGerar)).Cast<TipoMensalidadeGerar>().ToList())
+            {
+                <option value="@((int)cnt)" class="text-md-center">@cnt.ToString()</option>
+            }
+        </select>
+    </div>
+    <div>
+        @if (tipoGerar == (int)TipoMensalidadeGerar.Individual)
+        {
+            <div class="row">
+                <label for="selectTipo" class="col col-sm-6 form-control text-md-center">
+                    <MatH5>Escolha um afiliado</MatH5>
+                </label>
+                <div class="col">
+                    <select id="setectTipo" value="@idAfiliado" @onchange="OnUpdate" class="col col-sm custom-select my-select">
+                        @foreach (var cnt in afiliadoList)
+                        {
+                            <option value="@cnt.Id" class="text-md-center">@cnt.Nome</option>
+                        }
+                    </select>
+                    Selecionado ID: @idAfiliado
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        }
+        @*else if (tipoGerar == (int)TipoMensalidadeGerar.Lote)
+            {
+                <p>Escolha qtde de Parcelas</p>
+            }*@
+        <div class="row">
+            <MatTextField Label="Informe a quantidade de parcelas" @bind-Value="qtdeParcelas" Class="col" />
+            <MatTextField Label="Informe o valor das parcelas" @bind-Value="valorParcela" Class="col" />
+            <MatTextField Label="Informe dia de vencimento" @bind-Value="diaVencimento" Class="col" />
+        </div>
+    </div>
+    <div class="row">
+        <button class="btn btn-danger" @onclick="@(()=> { OpenPage("/mensalidadeindex"); })">Fechar</button>
+        <button class="btn btn-primary" @onclick="GerarParcelaClick">Gerar Parcela</button>
+    </div>
+</div>
+@code{
+    int tipoGerar;
+    string afiliado;
+    int qtdeParcelas;
+    decimal valorParcela;
+    int diaVencimento;
+    int idAfiliado;
+
+    bool modoLote;
+
+    protected async override Task OnInitializedAsync()
+    {
+
+        var lista = await ServiceAfiliado.GetAll();
+        afiliadoList.Clear();
+        afiliadoList.AddRange(lista);
+    }
+
+    async Task GerarParcelaClick()
+    {
+
+        modoLote = (tipoGerar == (int)TipoMensalidadeGerar.Lote) ? true : false;
+        await GerarParcela(idAfiliado, qtdeParcelas, valorParcela, diaVencimento, modoLote);
+        await MessageBox("Parcelas", "Parcela(s) Gerada(s) com Sucesso!!!", "success", "Ok", string.Empty, false);
+        
+        OpenPage("/mensalidadeindex",true);
+    }
+    private Task OnUpdate(ChangeEventArgs e)
+    {
+        // Assign the selected value to the Model
+        idAfiliado = Convert.ToInt32(e.Value);
+        return Task.CompletedTask;
+    }
+
+}

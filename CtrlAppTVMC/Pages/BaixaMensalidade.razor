@@ -1,0 +1,55 @@
+﻿@inherits AppVMC.ViewModels.MensalidadeViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgb(101, 111, 225) 100%);
+    }
+</style>
+<div class="container">
+    <div class="row">
+        <p><MatH6>Afiliado: @estaMensalidade.NomeAfiliado</MatH6> </p>
+        <p><MatH6>Valor da Mensalidade:@estaMensalidade.ValorMensalidade.ToString("c")</MatH6> </p>
+    </div>
+    <br />
+    <div class="row">
+        <MatTextField Label="Valor Pago"
+                      @bind-Value="estaMensalidade.ValorPago"
+                      Class="col col-md"
+                      InputClass="mask-moeda" />
+    </div>
+    <div class="flex-column text-md-right">
+        <button class="btn btn-danger" @onclick="@(() => { BlazoredModal.Cancel(); })">Cancelar</button>
+        <button class="btn btn-primary" @onclick="BaixarClick">Baixar</button>
+    </div>
+</div>
+@code {
+    bool escolha;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("maskInputs");
+
+        }
+    }
+    async Task BaixarClick()
+    {
+        isEditing = false;
+
+        var mensagem = $"Confirma a Baixa?";
+        var titulo = "Baixa de Mensalidade";
+
+        var confirmado = await MessageBoxModal($"{titulo}", $"{mensagem}", "warning", "Sim", "Não");
+        escolha = confirmado;
+        if (confirmado)
+        {
+            estaMensalidade.DataPagamento = DateTime.Now;
+            estaMensalidade.Pago = true;
+            estaMensalidade.DataAlteracao = DateTime.Now;
+
+            await ServiceMensalidade.Update(estaMensalidade);
+            await MessageBoxModal($"Baixa de Mensalidade", $"Mensalidade Baixada Com Sucesso!!!", "success", "Ok");
+            OpenPage("/mensalidadeindex");
+        }
+    }
+}

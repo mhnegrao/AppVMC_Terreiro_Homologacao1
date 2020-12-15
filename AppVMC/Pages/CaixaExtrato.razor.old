@@ -1,0 +1,35 @@
+﻿@inherits AppVMC.ViewModels.CaixaViewModel
+<div class="container">
+<h3>Extrato</h3>
+<p>Período:</p
+  <div class="row">
+        @if (lanctoCaixaList.Count > 0)
+        {
+            <GridData Caption="Extrato do Caixa"
+                      THeadClass="alert-primary"
+                      Items="lanctoCaixaList"
+                      AlturaGrid="350px"
+                      LarguraGrid="600px"
+                      PageSize="10">
+                <GridHeader>
+                    <th scope="col" class="text-center">Id</th>
+                    <th scope="col" class="text-right">Data</th>
+                    <th scope="col" class="text-center">Descrição</th>
+                    <th scope="col" class="text-right">Valor</th>
+                    <th scope="col" class="text-center">D/C</th>
+                    <th scope="col" colspan="3" class="text-center">Ações</th>
+                </GridHeader>
+                <GridRow>
+                    <td scope="row" class="text-center">@context.Id</td>
+                    <td scope="row" class="text-right">@context.DataLancamento.ToShortDateString())</td>
+                    <td scope="row" class="text-center">@context.DescricaoLancamento</td>
+                    <td scope="row" class="text-right">@context.ValorLancto.ToString("c")</td>
+                    <td scope="row" class="text-center">@context.TipoLanctoToString</td>
+                    <td scope="row" class="text-center">Ver Extrato</td>
+                    <td scope="row" class="text-center">Editar</td>
+                    <td scope="row" class="text-center">Excluir</td>
+                </GridRow>
+            </GridData>
+        }
+</div>
+</div>

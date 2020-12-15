@@ -1,0 +1,21 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "default"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 33061,
+            "driver": "MariaDB",
+            "name": "MariaDB-Docker",
+            "username": "usersys",
+            "password": "    - MYSQL_PASSWORD=User@sys!",
+            "database": "controleweb"
+        }
+    ],
+    "azure-iot-edge.defaultPlatform": {
+        "platform": "windows-amd64",
+        "alias": null
+    }
+}

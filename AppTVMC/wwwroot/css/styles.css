@@ -1,0 +1,41 @@
+﻿@import url('../css/site.css');
+@import url('../css/datagrid-dark.css');
+@import url(https://fonts.googleapis.com/css?family=Frijole:400&subset=latin);
+
+.menubar {
+    position: sticky;
+    width: 100%;
+    z-index: 100;
+    top: 0;
+}
+
+.wrapper {
+    height: 100%;
+}
+
+.parallax-img {
+    height: 100%;
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.parallax-img {
+    background-image: url('images/orixas.jpg');
+}
+
+.titulo-inicial {
+    color: #660ca1;
+    background-color: transparent;
+    font-family: 'Frijole', cursive;
+    /*        font-family: 'Exo', sans-serif;
+    */ /*        font-family: 'Black Han Sans', sans-serif;
+        */
+    font-size: 300px;
+    text-shadow: 2px 2px 5px #ff6a00;
+}
+
+h1 {
+    margin: 15px;
+}

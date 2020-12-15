@@ -1,0 +1,16 @@
+﻿@page "/manutencaoindex"
+@inherits AppVMC.ViewModels.ManutencaoViewModel
+<h3>Manutenção</h3>
+<br />
+<button class="btn btn-secondary" @onclick="EfetuarBackup">Efetuar Backup</button>
+<button class="btn btn-secondary">Recuperar Backup</button>
+<button class="btn btn-secondary">Exportar como Planilha</button>
+<button class="btn btn-secondary">Limpar Base de Dados</button>
+
+@code {
+
+    protected async Task EfetuarBackup()
+    {
+        await GerarBackup();
+    }
+}

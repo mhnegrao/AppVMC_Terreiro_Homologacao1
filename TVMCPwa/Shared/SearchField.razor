@@ -1,0 +1,47 @@
+﻿<div class="input-group">
+    <input type="text" class="form-control" @bind-value="BindingValue" placeholder="@Placeholder" aria-label="Recipient's username">
+    <div class="input-group-append">
+        <button class="btn btn-light" disabled>|</button>
+        <button type="button" class="btn btn-sm btn-primary" @onclick="SearchClick">
+            <i class="oi oi-eye" style="font-size:medium"></i>&nbsp;Pesquisar
+        </button>
+        <button type="button" class="btn btn-sm btn-danger" @onclick="ClearClick">
+            <i class="oi oi-circle-x" style="font-size:medium"></i>&nbsp;Limpar
+        </button>
+    </div>
+</div>
+@code{
+    [Parameter] public string Placeholder { get; set; } = "Entre um texto para pesquisar";
+    [Parameter] public Action SearchAction { get; set; }
+    [Parameter] public Action ClearAction { get; set; }
+    [Parameter] public EventCallback<Action> ActionClick { get; set; }
+    private string _value;
+
+    [Parameter]
+    public string BindingValue
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+            _value = value;
+            BindingValueChanged.InvokeAsync(value);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> BindingValueChanged { get; set; }
+
+
+    void SearchClick()
+    {
+        StateHasChanged();
+        InvokeAsync(SearchAction);
+    }
+    void ClearClick()
+    {
+        StateHasChanged();
+        InvokeAsync(ClearAction);
+    }
+
+}

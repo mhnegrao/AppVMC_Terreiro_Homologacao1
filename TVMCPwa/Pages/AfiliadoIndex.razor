@@ -1,0 +1,57 @@
+﻿@page "/afiliadoindex"
+@inherits TVMCPwa.ViewModels.AfiliadoViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgb(154, 154, 154) 100%);
+    }
+</style>
+<div class="wrapper container">
+
+    <div class="container-fluid text-right">
+        <h3>Afiliados</h3>
+    </div>
+    <div class="container-fluid text-right">
+        <button class="btn btn-primary" @onclick="NovoAfiliado">Novo Afiliado</button>
+    </div>
+
+    @if (afiliadoList.Count > 0)
+    {
+        <DataGrid Caption="Relação de Afiliados"
+                  THeadClass="alert-info"
+                  Items="afiliadoList"
+                  AlturaGrid="350px"
+                  LarguraGrid="600"
+                  PageSize="10">
+            <GridHeader>
+                <th scope="col">Nº</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Fone</th>
+                <th scope="col" class="text-center">E-mail</th>
+                <th scope="col" class="text-center">Mensalista</th>
+                <th scope="col" colspan="2" class="text-center">Ações</th>
+            </GridHeader>
+            <GridRow>
+                <td scope="row" class="text-center">@context.Id</td>
+                <td scope="row" class="text-truncate">@context.Nome</td>
+                <td scope="row">@context.Celular</td>
+                <td scope="row">@context.Email</td>
+                <td scope="row" class="text-center">
+                    <input type="checkbox" @bind="@context.IsMensalista" onclick="return false;">
+                </td>
+
+                <td class="text-right" scope="col" title="@($"Editar Serviço ID:{context.Id}")">
+                    <MatIconButton @onclick="@(async ()=>{await EditarAfiliado(@context.Id);})">
+                        <MatIcon Id="edit-button" Style="color:mediumblue">@MatIconNames.Edit</MatIcon>
+                    </MatIconButton>
+                </td>
+                <td class="text-left" scope="col" title="@($"Excluir Serviço ID:{context.Id}")">
+                    <MatIconButton Id="delete-button" @onclick="@(async ()=>{ await ExcluirAfiliado(@context.Id);})">
+                        <MatIcon Style="color:red">@MatIconNames.Delete</MatIcon>
+                    </MatIconButton>
+                </td>
+            </GridRow>
+        </DataGrid>
+    }
+</div>
+<div class="wrapper"></div>

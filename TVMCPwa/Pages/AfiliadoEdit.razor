@@ -1,0 +1,116 @@
+﻿@page "/afiliadoedit"
+@inherits TVMCPwa.ViewModels.AfiliadoViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgba(233,191,148,1) 100%);
+    }
+</style>
+<div class="container-fluid text-right">
+    <h3>Alteração de Dados</h3>
+</div>
+
+<div>
+    <div>
+        <div class="row">
+            <MatTextField Label="Nome"
+                          @bind-Value="esteAfiliado.Nome"
+                          Class="col col-md" />
+        </div>
+        <div class="row">
+            <MatTextField Label="Email"
+                          @bind-Value="esteAfiliado.Email"
+                          Class="col col-md" />
+            <MatTextField Label="Fone"
+                          PlaceHolder="Ex.:(11)91010-0000"
+                          @bind-Value="esteAfiliado.Celular"
+                          Class="col col-md"
+                          InputClass="mask-fone" />
+        </div>
+        <div class="row">
+            <MatTextField Label="Observações"
+                          @bind-Value="esteAfiliado.Observacao"
+                          Class="col col-md" />
+        </div>
+        <div class="row">
+            <p>
+                <MatCheckbox Label="Afiliado Mensalista" @bind-Value="esteAfiliado.IsMensalista" />
+            </p>
+        </div>
+        <div class="row">
+            <h4>Mensalidades</h4>
+            <div class="container-fluid text-right">
+                <button class="btn btn-success" @onclick="NovoAfiliado">Adicionar Mensalidade</button>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <DataGrid Caption="Relação de Mensalidades"
+                      THeadClass="alert-primary"
+                      Items="esteAfiliado.Mensalidades"
+                      AlturaGrid="200px"
+                      PageSize="10">
+                <GridHeader>
+                    <th scope="col">Nº</th>
+                    <th scope="col" class="text-center">Referência</th>
+                    <th scope="col" class="text-center">Data Vencimento</th>
+                    <th scope="col" class="text-right">Valor</th>
+                    <th scope="col" class="text-center">Pago</th>
+                    <th scope="col" class="text-center">Data Pagamento</th>
+                    <th scope="col" class="text-right">Valor Pago</th>
+                    <th scope="col" colspan="2" class="text-center">Ações</th>
+                </GridHeader>
+                <GridRow>
+                    <td scope="row" class="text-center">@context.Id</td>
+                    <td scope="row" class="text-center">@context.MensalidadeReferencia</td>
+                    <td scope="row" class="text-center">@context.DataVencimento.ToShortDateString()</td>
+                    <td scope="row" class="text-right">@context.ValorMensalidade.ToString("C")</td>
+                    <td scope="row" class="text-center">
+                        <input type="checkbox" @bind="@context.Pago" onclick="return false;">
+                    </td>
+                    <td scope="row" class="text-center">@context.DataPagamento.ToShortDateString()</td>
+                    <td scope="row" class="text-right">@context.ValorPago.ToString("c")</td>
+
+                    <td class="text-right" scope="col" title="@($"Editar Serviço ID:{context.Id}")">
+                        <MatIconButton @onclick="@(async ()=>{await EditarMensalidade(@context.Id);})">
+                            <MatIcon Id="edit-button" Style="color:mediumblue">@MatIconNames.Edit</MatIcon>
+                        </MatIconButton>
+                    </td>
+                    <td class="text-left" scope="col" title="@($"Excluir Serviço ID:{context.Id}")">
+                        <MatIconButton Id="delete-button" @onclick="@(async ()=>{ await ExcluirMensalidade(@context.Id);})">
+                            <MatIcon Style="color:red">@MatIconNames.Delete</MatIcon>
+                        </MatIconButton>
+                    </td>
+
+                </GridRow>
+            </DataGrid>
+        </div>
+    </div>
+</div>
+<div class="flex-column text-md-right">
+    <button class="btn btn-dark" @onclick="@(() => { OpenPage("/afiliadoindex"); })">Voltar</button>
+    <button class="btn btn-primary" @onclick="SalvarClick">Salvar</button>
+</div>
+@code{
+    bool escolha;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("maskInputs");
+
+        }
+    }
+    async Task SalvarClick()
+    {
+        isEditing = true;
+
+        var mensagem = $"Confirma a Alteração deste afiliado: {esteAfiliado.Nome}?";
+        var titulo = "Alteração de Afiliado";
+
+        var confirmado = await MessageBoxModal($"{titulo}", $"{mensagem}", "warning", "Sim", "Não");
+        escolha = confirmado;
+        if (confirmado)
+            await SalvarEdicao();
+    }
+}

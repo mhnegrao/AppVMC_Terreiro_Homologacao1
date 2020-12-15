@@ -1,0 +1,120 @@
+﻿@page "/lancamentoedit"
+@inherits AppVMC.ViewModels.LancamentoViewModel
+<style>
+    body {
+        background: rgb(245,237,240);
+        background: radial-gradient(circle, rgba(245,237,240,1) 0%, rgb(154, 154, 154) 100%);
+    }
+
+    .custom-radios div {
+        display: inline-block;
+    }
+
+    .custom-radios input[type="radio"] {
+        display: none;
+    }
+
+        .custom-radios input[type="radio"] + label {
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+
+            .custom-radios input[type="radio"] + label span {
+                display: inline-block;
+                width: 40px;
+                height: 40px;
+                margin: -1px 4px 0 0;
+                vertical-align: middle;
+                cursor: pointer;
+                border-radius: 50%;
+                border: 2px solid #FFFFFF;
+                box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.33);
+                background-repeat: no-repeat;
+                background-position: center;
+                text-align: center;
+                line-height: 44px;
+            }
+
+                .custom-radios input[type="radio"] + label span img {
+                    opacity: 0;
+                    transition: all .3s ease;
+                }
+
+        .custom-radios input[type="radio"]#color-cred + label span {
+            background-color: #343BDB;
+        }
+
+        .custom-radios input[type="radio"]#color-est + label span {
+            background-color: #f1c40f;
+        }
+
+        .custom-radios input[type="radio"]#color-deb + label span {
+            background-color: #F42C17;
+        }
+
+        .custom-radios input[type="radio"]:checked + label span {
+            opacity: 1;
+            background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/242518/check-icn.svg) center center no-repeat;
+            width: 40px;
+            height: 40px;
+            display: inline-block;
+        }
+</style>
+<div class="container">
+    <div class="row form-group alert alert-info">
+        <label class="form-control alert-info">Tipo de Lançamento</label>
+
+
+
+        <MatRadioGroup @bind-Value="esteLancto.TipoLancto" TValue="int">
+            <MatRadioButton Id="color-deb" Value="@(1)" Label="Débito" TValue="int" />
+            <MatRadioButton Id="color-cred" Value="@(2)" Label="Crédito" TValue="int" />
+            <MatRadioButton Id="color-est" Value="@(3)" Label="Estorno" TValue="int" />
+        </MatRadioGroup>
+    </div>
+
+    <div class="row">
+        <MatTextField Label="Descrição"
+                      @bind-Value="esteLancto.DescricaoLancamento"
+                      Class="col col-md" />
+    </div>
+    <div class="row">
+        <MatTextField Label="Valor"
+                      @bind-Value="esteLancto.ValorLancto"
+                      Class="col col-md"
+                      InputClass="mask-moeda"
+                      Format="C" />
+    </div>
+    <div class="flex-column text-md-right">
+        <button class="btn btn-danger" @onclick="@(() => { BlazoredModal.Cancel(); })">Cancelar</button>
+        <button class="btn btn-primary" @onclick="SalvarClick">Salvar</button>
+    </div>
+</div>
+@code{
+
+    string tipoSelecionado = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("maskInputs");
+        }
+
+    }
+    private async Task SalvarClick()
+    {
+        var mensagem = $"Confirma o lançamento?";
+        var titulo= isEditing?"Alteração de Lançamento": "Inclusão de Lançamento";
+
+        var confirmado = await MessageBoxModal($"{titulo}", $"{mensagem}", "question", "Sim", "Não");
+
+        if (confirmado)
+        {
+await BlazoredModal.Close();
+            await SalvarLancamento();
+        }
+    }
+}

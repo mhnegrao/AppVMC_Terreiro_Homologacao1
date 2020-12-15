@@ -1,0 +1,12 @@
+version: '3.4'
+services:
+  appvmc:
+    image: ${DOCKER_REGISTRY-}appvmc
+    container_name: 'app_tvmc'
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+networks: 
+  appvmc-dev:
+          driver: bridge   
